@@ -155,5 +155,7 @@ volumes:
 networks:
   ph_network:
     driver: macvlan
+  external: true  
   ph_bridge:
     driver: bridge
+  external: true  
