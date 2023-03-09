@@ -20,13 +20,19 @@ services:
       - zammad-backup:/var/tmp/zammad
       - zammad-data:/opt/zammad:ro
       - ./scripts/backup.sh:/usr/local/bin/backup.sh:ro
-
+    networks:
+      - ph_network
+      - ph_bridge
+      
   zammad-elasticsearch:
     image: bitnami/elasticsearch:8.5.1
     restart: ${RESTART}
     volumes:
       - elasticsearch-data:/bitnami/elasticsearch/data
-
+    networks:
+      - ph_network
+      - ph_bridge
+      
   zammad-init:
     command: ["zammad-init"]
     depends_on:
@@ -40,12 +46,18 @@ services:
     restart: on-failure
     volumes:
       - zammad-data:/opt/zammad
-
+    networks:
+      - ph_network
+      - ph_bridge
+      
   zammad-memcached:
     command: memcached -m 256M
     image: memcached:1.6.17-alpine
     restart: ${RESTART}
-
+    networks:
+      - ph_network
+      - ph_bridge
+      
   zammad-nginx:
     command: ["zammad-nginx"]
     expose:
@@ -56,7 +68,10 @@ services:
     restart: ${RESTART}
     volumes:
       - zammad-data:/opt/zammad
-
+    networks:
+      - ph_network
+      - ph_bridge
+      
   zammad-postgresql:
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
@@ -65,7 +80,10 @@ services:
     restart: ${RESTART}
     volumes:
       - postgresql-data:/var/lib/postgresql/data
-
+    networks:
+      - ph_network
+      - ph_bridge
+      
   zammad-railsserver:
     command: ["zammad-railsserver"]
     depends_on:
@@ -79,11 +97,17 @@ services:
     restart: ${RESTART}
     volumes:
       - zammad-data:/opt/zammad
-
+    networks:
+      - ph_network
+      - ph_bridge
+      
   zammad-redis:
     image: redis:7.0.5-alpine
     restart: ${RESTART}
-
+    networks:
+      - ph_network
+      - ph_bridge
+      
   zammad-scheduler:
     command: ["zammad-scheduler"]
     depends_on:
@@ -97,7 +121,10 @@ services:
     restart: ${RESTART}
     volumes:
       - zammad-data:/opt/zammad
-
+    networks:
+      - ph_network
+      - ph_bridge
+      
   zammad-websocket:
     command: ["zammad-websocket"]
     depends_on:
@@ -111,7 +138,10 @@ services:
     restart: ${RESTART}
     volumes:
       - zammad-data:/opt/zammad
-
+    networks:
+      - ph_network
+      - ph_bridge
+      
 volumes:
   elasticsearch-data:
     driver: local
@@ -121,3 +151,9 @@ volumes:
     driver: local
   zammad-data:
     driver: local
+
+networks:
+  ph_network:
+    driver: macvlan
+  ph_bridge:
+    driver: bridge
